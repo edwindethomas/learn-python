@@ -1,32 +1,23 @@
 from random import choice
 import os
-dic = {}
-contador = 0
 
+clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
-def clear_console():
-    command = 'clear'
-    if os.name in ('nt','dos'):
-        command = 'cls'
-    os.system(command)
+def print_hang():
+    print('   +-------++')
+    print('   |       ||')
+    print('   o       ||')
+    print('  /|\      ||')
+    print('  / \      ||')
+    print('           ||')
+    print('  _________||')
+    print(' |__________|')
 
-
-def comprobar(letra,palabra):
-    for le in palabra:
-        if(le == letra):
-            dic[le] = True
-        else:
-            contador+=1
-            
-def print_lines(data):
-    cadena = ''
-    for elem in data:
-        if dic[elem] == True:
-            cadena = cadena+elem+' '
-        else:
-            cadena = cadena+'_ '
-    print(cadena)
-            
+def guess_view(guess):
+    print('Las letras ya dichas son:')
+    s = str(guess).replace('[', '')
+    s = s.replace(']', '')
+    print(s)
 
 
 def read():
@@ -38,40 +29,45 @@ def read():
     return data
 
 
-def print_hangman(data):
-    print("   _    _")
-    print("  | |  | |  ")
-    print("  | |__| |  ____ _   _ ___    ____ _   _ ___ ___    ____ _   _ ___  ")
-    print("  |  __  | /  _ ` | | '__ \  /  _ ` | | '__ ` _ \  /  _ ` | | '__ \ ")
-    print("  | |  | | | (_)  | | |  | | | (_)  | | |  | | | | | (_)  | | |  | |")
-    print("  |_|  |_| \____,_| |_|  |_| \____, | |_|  |_| |_| \____,_| |_|  |_|")
-    print("                                  | |")
-    print("                                __/ /")  
-    print("                               |___/")
-    print("                           +------------+")
-    print("                           |           ||")
-    print("                           o           ||")
-    print("                          /|\          ||")
-    print("                          / \          ||")
-    print("                                       ||")
-    print("                                       ||")
-    print("                         ______________||______")
-    print("                        |______________________|")
-    for elem in data:
-        dic[elem] = False
-
+def hangman_logic(word):
+    guess = []
+    allow_err = 7
+    done = False
+    while not done:
+        clearConsole()
+        print_hang()
+        for letter in word:
+            if letter.lower() in guess:
+                print(letter,end=' ')
+            else:
+                print('_',end=' ')
+        print('')
+        guess_view(guess)
+        print('')
+        let = input('Ingresa una letra: ')
+        guess.append(let.lower())
+        if let.lower() not in word.lower():
+            allow_err -=1
+            if allow_err == 0:
+                break
+        done= True
+        for letter in word:
+            if letter.lower() not in guess:
+                done = False
+    
+    if done:
+        print("Ganaste!! Felicitaciones, la palabra es "+word)
+    else:
+        print('Game over!!! la palabra era '+word)
 
 def hangman_main():
 
     data = read()
-    data = choice(list(enumerate(data,1)))
-    data = data[1]
-    while(contador<6):
-        clear_console()
-        print_hangman(data)
-        print_lines(data)
-        letra = input('Ingresa una letra: ')
-        comprobar(letra,data)
+    word = choice(data)
+    hangman_logic(word)
+    
+
+
 
 
 
